@@ -6,10 +6,12 @@ import AuthPage from '../features/auth/AuthPage';
 import PostsPage from '../features/posts/PostsPage';
 import PostForm from '../features/posts/PostsForm';
 import ProtectedRoute from '../utils/protectedRoutes';
+import Navbar from '../Components/Navbar';
 
 const AppRouter = () => {
   return (
     <Router>
+        <Navbar/>
       <Routes>
         {/* Public route */}
         <Route path="/auth" element={<AuthPage />} />
