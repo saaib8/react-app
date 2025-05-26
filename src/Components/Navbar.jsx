@@ -1,66 +1,44 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout} from '../features/auth/authSlice';
+import { logout } from '../features/auth/authSlice';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Don't render navbar on auth page
+  if (location.pathname === '/auth') {
+    return null;
+  }
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/auth'); // Redirect to auth page after logout
+    navigate('/auth');
   };
 
   return (
-
-    <nav style={styles.nav}>
-      <div>
-        <Link to="/" style={styles.link}>Home</Link>
-        <Link to="/posts" style={styles.link}>Posts</Link>
+    <nav className="navbar">
+      <div className="nav-links">
+        <Link to="/" className="nav-link">Home</Link>
+        <Link to="/posts" className="nav-link">Posts</Link>
       </div>
 
-      <div>
+      <div className="user-section">
         {user ? (
           <>
-            <span style={styles.userText}>Welcome, {user.name}</span>
-            <button onClick={handleLogout} style={styles.button}>Logout</button>
+            <span className="user-welcome">Welcome, {user.name}</span>
+            <button onClick={handleLogout} className="logout-button">Logout</button>
           </>
         ) : (
-          <Link to="/auth" style={styles.link}>Login / Signup</Link>
+          <Link to="/auth" className="nav-link">Login / Signup</Link>
         )}
       </div>
     </nav>
   );
-};
-
-const styles = {
-  nav: {
-    padding: '1rem',
-    backgroundColor: '#282c34',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    color: 'white',
-  },
-  link: {
-    marginRight: '1rem',
-    textDecoration: 'none',
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  userText: {
-    marginRight: '1rem',
-  },
-  button: {
-    backgroundColor: '#61dafb',
-    border: 'none',
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-    borderRadius: '4px',
-    fontWeight: 'bold',
-  },
 };
 
 export default Navbar;

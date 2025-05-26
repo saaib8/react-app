@@ -1,10 +1,22 @@
 import { createSlice, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { fetchPostsAPI } from './postsApi';
+import axios from 'axios';
 
 // Use the separated API function here
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   return await fetchPostsAPI();
 });
+
+export const createPost = createAsyncThunk(
+  'posts/createPost',
+  async (postData) => {
+    const response = await axios.post('https://jsonplaceholder.typicode.com/posts', {
+      ...postData,
+      userId: 1, // This would come from the authenticated user in a real app
+    });
+    return response.data;
+  }
+);
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -50,6 +62,18 @@ const postsSlice = createSlice({
         state.items = action.payload;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(createPost.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items.unshift(action.payload);
+      })
+      .addCase(createPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

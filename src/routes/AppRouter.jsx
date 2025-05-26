@@ -4,28 +4,30 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import AuthPage from '../features/auth/AuthPage';
 import PostsPage from '../features/posts/PostsPage';
-import PostForm from '../features/posts/PostsForm';
+import PostForm from '../features/posts/PostForm';
 import ProtectedRoute from '../utils/protectedRoutes';
 
 const AppRouter = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Public route */}
-        <Route path="/auth" element={<AuthPage />} />
+    // <Router>
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<PostsPage />} />
-          <Route path="/posts/new" element={<PostForm />} />
-          <Route path="/posts/edit/:postId" element={<PostForm />} />
-          {/* Add other protected routes like comments if needed */}
-        </Route>
+    <Routes>
+      {/* Public route */}
+      <Route path="/auth" element={<AuthPage />} />
 
-        {/* Redirect unknown routes to / */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+      {/* Protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<PostsPage />} />
+        <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts/new" element={<PostForm />} />
+        <Route path="/edit-post" element={<PostForm />} />
+        {/* Add other protected routes like comments if needed */}
+      </Route>
+
+      {/* Redirect unknown routes to / */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+    // </Router>
   );
 };
 

@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { signUp, signIn } from './authSlice';
 import { useNavigate } from 'react-router-dom';
+import '../../styles/Auth.css';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,41 +30,68 @@ const AuthPage = () => {
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>{isLogin ? 'Login' : 'Sign Up'}</h2>
-      <form onSubmit={handleSubmit}>
-        {!isLogin && (
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-        )}
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
-      </form>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button onClick={() => setIsLogin((prev) => !prev)}>
-        {isLogin ? 'Need an account? Sign up' : 'Have an account? Log in'}
-      </button>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 className="auth-title">{isLogin ? 'Welcome Back' : 'Create Account'}</h1>
+          <p className="auth-subtitle">
+            {isLogin ? 'Sign in to continue' : 'Sign up to get started'}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          {!isLogin && (
+            <div className="form-group">
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={form.name}
+                onChange={handleChange}
+                className="form-input"
+                required
+              />
+            </div>
+          )}
+
+          <div className="form-group">
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={form.email}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              className="form-input"
+              required
+            />
+          </div>
+
+          <button type="submit" className="submit-button">
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </button>
+        </form>
+
+        {error && <div className="error-message">{error}</div>}
+
+        <button
+          onClick={() => setIsLogin((prev) => !prev)}
+          className="toggle-button"
+        >
+          {isLogin ? 'Need an account? Sign up' : 'Have an account? Sign in'}
+        </button>
+      </div>
     </div>
   );
 };

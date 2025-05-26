@@ -4,10 +4,14 @@ import { fetchCommentsByPostId } from './commentsApi';
 // Async thunk to fetch comments for a post
 export const fetchComments = createAsyncThunk(
   'comments/fetchComments',
-  async (postId, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const comments = await fetchCommentsByPostId(postId);
-      return { postId, comments };
+      // Fetch all posts first to get their IDs
+      const posts = thunkAPI.getState().posts.items;
+      const commentsPromises = posts.map(post => fetchCommentsByPostId(post.id));
+      const commentsArrays = await Promise.all(commentsPromises);
+      // Flatten the array of arrays into a single array of comments
+      return commentsArrays.flat();
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -17,27 +21,23 @@ export const fetchComments = createAsyncThunk(
 const commentsSlice = createSlice({
   name: 'comments',
   initialState: {
-    commentsByPost: {},  // { postId: [comments] }
+    items: [],
     loading: false,
     error: null,
   },
   reducers: {
     addComment: (state, action) => {
-      const { postId, comment } = action.payload;
-      if (!state.commentsByPost[postId]) {
-        state.commentsByPost[postId] = [];
-      }
-      state.commentsByPost[postId].push(comment);
+      state.items.push(action.payload);
     },
     updateComment: (state, action) => {
-      const { postId, commentId, content } = action.payload;
-      const comments = state.commentsByPost[postId] || [];
-      const comment = comments.find(c => c.id === commentId);
-      if (comment) comment.body = content;
+      const { id, ...updates } = action.payload;
+      const comment = state.items.find(c => c.id === id);
+      if (comment) {
+        Object.assign(comment, updates);
+      }
     },
     deleteComment: (state, action) => {
-      const { postId, commentId } = action.payload;
-      state.commentsByPost[postId] = state.commentsByPost[postId].filter(c => c.id !== commentId);
+      state.items = state.items.filter(c => c.id !== action.payload);
     },
   },
   extraReducers: (builder) => {
@@ -48,8 +48,7 @@ const commentsSlice = createSlice({
       })
       .addCase(fetchComments.fulfilled, (state, action) => {
         state.loading = false;
-        const { postId, comments } = action.payload;
-        state.commentsByPost[postId] = comments;
+        state.items = action.payload;
       })
       .addCase(fetchComments.rejected, (state, action) => {
         state.loading = false;
